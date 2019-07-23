@@ -1,5 +1,7 @@
 // 3rd-party libs
 import React from 'react';
+
+// our own code
 import * as substrateService from '../../services/substrateService';
 
 class AuctionInfo extends React.Component {

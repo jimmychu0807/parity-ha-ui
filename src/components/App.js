@@ -7,10 +7,6 @@ import AuctionInfo from './AuctionInfo';
 import CreateKittyPanel from './CreateKittyPanel';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   async componentDidMount() {
     // component did mount logic
     substrateService.connect();

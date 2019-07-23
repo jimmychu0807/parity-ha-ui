@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/keyring');
+const testKeyring = require('@polkadot/keyring/testing');
 const { stringToU8a } = require('@polkadot/util');
 
 const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/"
@@ -26,6 +27,29 @@ async function current_count() {
 
   // console.log(`kittiesCount: ${kittiesCount} | auctionsCount: ${auctionsCount}`);
   return { kittiesCount, auctionsCount };
+}
+
+async function create_kitty(acctId, kitty_name) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+
+  api.tx.catAuction
+    .createKitty(kitty_name)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({ev = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      }
+    });
+}
+
+async function getKeyPairAndNonce(acctId) {
+  const api = await createApiWithTypes();
+  const keyring = testKeyring.default();
+  const nonce = await api.query.system.accountNonce(acctId);
+  const keyPair = keyring.getPair(acctId);
+  return { keyPair, nonce };
 }
 
 async function createApiWithTypes() {
@@ -77,4 +101,4 @@ async function createApiWithTypes() {
   });
 }
 
-export { connect, current_count }
+export { connect, current_count, create_kitty }

@@ -1,7 +1,7 @@
 import React from 'react';
 
 // our own code
-// import { SignerBond } from '../../substrate-ui/AccountIdBond';
+import * as substrateService from '../../services/substrateService';
 
 class CreateKittyPanel extends React.Component {
 
@@ -17,7 +17,7 @@ class CreateKittyPanel extends React.Component {
     const account = form.querySelector("#create-kitty-account").value;
     const kitty_name = form.querySelector("#create-kitty-kname").value;
 
-
+    substrateService.create_kitty(account, kitty_name).then(res => console.log);
   }
 
   render() {
