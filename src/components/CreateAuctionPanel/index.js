@@ -14,29 +14,24 @@ class CreateAuctionPanel extends React.Component {
     ev.preventDefault();
 
     const form = this.formRef.current;
-    const account = form.querySelector("#create-auction-account").value;
     const kittyId = form.querySelector("#create-auction-kitty-id").value;
     const basePrice = form.querySelector("#create-auction-baseprice").value;
     const endDateTime = form.querySelector("#create-auction-enddatetime input").value;
     const unixT = this.moment(endDateTime, "YYYY-MM-DD HH:mm").unix();
 
-    substrateService.startAuction(account, kittyId, basePrice, unixT).then(res => console.log);
+    const { acctId } = this.props;
+
+    substrateService.startAuction(acctId, kittyId, basePrice, unixT).then(res => console.log);
   }
 
   render() {
+    const { acctId } = this.props;
+    const isAcctId = acctId && acctId.length > 0;
+
     return(
       <div>
-        <h3>Create Auction</h3>
+        <h5>Create Auction</h5>
         <form autoComplete="off" onSubmit={ this.handleSubmit } ref={ this.formRef }>
-          <div className="form-group row">
-            <label htmlFor="create-auction-account" className="col-sm-3 col-form-label">
-              Account:
-            </label>
-            <div className="col-sm-9">
-              <input type="text" className="form-control" id="create-auction-account" placeholder="Account"/>
-            </div>
-          </div>
-
           <div className="form-group row">
             <label htmlFor="create-auction-kitty-id" className="col-sm-3 col-form-label">
               Kitty ID:
@@ -69,7 +64,8 @@ class CreateAuctionPanel extends React.Component {
 
           <div className="form-group row justify-content-center">
             <div className="col-6">
-              <button type="submit" className="btn btn-primary btn-block">Create</button>
+              <button type="submit" className="btn btn-primary btn-block"
+                disabled={ !isAcctId } >Create Auction</button>
             </div>
           </div>
 

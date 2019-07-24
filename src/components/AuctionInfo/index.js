@@ -9,27 +9,32 @@ class AuctionInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = { cnts: {} };
+    this.fetchCounts();
   }
 
-  componentDidMount() {
-    substrateService.objsCount().then(res => {
+  fetchCounts = () => {
+    substrateService.objsCount(this.props.acctId).then(res => {
       this.setState({
-        cnts: Object.assign({}, ...Object.keys(res).map(k => ({ [k]: res[k].toNumber()})))
+        cnts: Object.assign({}, ...Object.keys(res).map(k => ({ [k]: res[k].toString()})))
       })
     });
   }
 
   render() {
     return(<React.Fragment>
+      <h5>Info</h5>
       <div className="row">
-        <div className="col-12">
-          Current kitten count: { this.state.cnts['kittiesCount'] }
+        <div className="col-sm-6">
+          Total kitties count: { this.state.cnts['ttKittiesCount'] }
+        </div>
+        <div className="col-sm-6">
+          My kitties count: { this.state.cnts['myKittiesCount'] }
         </div>
       </div>
 
       <div className="row">
-        <div className="col-12">
-          Current auction count: { this.state.cnts['auctionsCount'] }
+        <div className="col-sm-6">
+          Total auctions count: { this.state.cnts['ttAuctionsCount'] }
         </div>
       </div>
     </React.Fragment>);

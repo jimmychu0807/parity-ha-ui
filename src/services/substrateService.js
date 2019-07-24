@@ -15,16 +15,18 @@ async function connect() {
   console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
 }
 
-async function objsCount() {
+async function objsCount(acctId) {
   const api = await createApiWithTypes();
-
-  const [ kittiesCount, auctionsCount ] = await Promise.all([
+  const isAcctId = acctId && acctId.length > 0;
+  const [
+    ttKittiesCount, ttAuctionsCount, myKittiesCount
+  ] = await Promise.all([
     api.query.catAuction.kittiesCount(),
     api.query.catAuction.auctionsCount(),
+    isAcctId ? api.query.catAuction.ownerKittiesCount(acctId) : 0,
   ]);
 
-  // console.log(`kittiesCount: ${kittiesCount} | auctionsCount: ${auctionsCount}`);
-  return { kittiesCount, auctionsCount };
+  return { ttKittiesCount, ttAuctionsCount, myKittiesCount };
 }
 
 async function createKitty(acctId, kitty_name) {
