@@ -1,8 +1,5 @@
 import React from 'react';
 
-// our own code
-import * as dataService from '../../services/dataService';
-
 class SetAcctIdPanel extends React.Component {
   constructor(props) {
     super(props);

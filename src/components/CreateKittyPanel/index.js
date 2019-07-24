@@ -2,7 +2,6 @@ import React from 'react';
 
 // our own code
 import * as substrateService from '../../services/substrateService';
-import * as dataService from '../../services/dataService';
 
 class CreateKittyPanel extends React.Component {
 

@@ -6,6 +6,8 @@ import SetAcctIdPanel from './SetAcctIdPanel';
 import AuctionInfo from './AuctionInfo';
 import CreateKittyPanel from './CreateKittyPanel';
 import CreateAuctionPanel from './CreateAuctionPanel';
+import KittiesPanel from './KittiesPanel';
+import AuctionsPanel from './AuctionsPanel';
 
 // services
 import * as substrateService from '../services/substrateService'
@@ -52,6 +54,12 @@ class App extends React.Component {
         </div>
         <div className="m-2 p-2 border rounded">
           <CreateAuctionPanel acctId={ acctId }/>
+        </div>
+        <div className="m-2 p-2 border rounded">
+          <KittiesPanel acctId={ acctId }/>
+        </div>
+        <div className="m-2 p-2 border rounded">
+          <AuctionsPanel acctId={ acctId }/>
         </div>
       </div>
     );
