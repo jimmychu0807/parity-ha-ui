@@ -1,7 +1,5 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Keyring } = require('@polkadot/keyring');
 const testKeyring = require('@polkadot/keyring/testing');
-const { stringToU8a } = require('@polkadot/util');
 
 const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/"
 
@@ -14,10 +12,10 @@ async function connect() {
     api.rpc.system.version()
   ]);
 
-  // console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
+  console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
 }
 
-async function current_count() {
+async function objsCount() {
   const api = await createApiWithTypes();
 
   const [ kittiesCount, auctionsCount ] = await Promise.all([
@@ -29,12 +27,27 @@ async function current_count() {
   return { kittiesCount, auctionsCount };
 }
 
-async function create_kitty(acctId, kitty_name) {
+async function createKitty(acctId, kitty_name) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(acctId);
 
   api.tx.catAuction
     .createKitty(kitty_name)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({ev = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      }
+    });
+}
+
+async function startAuction(acctId, kittyId, basePrice, endDateTime) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+
+  api.tx.catAuction
+    .startAuction(kittyId, endDateTime, basePrice)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
     .send( ({ev = [], status}) => {
       console.log('Transaction status:', status.type);
@@ -101,4 +114,4 @@ async function createApiWithTypes() {
   });
 }
 
-export { connect, current_count, create_kitty }
+export { connect, objsCount, createKitty, startAuction }

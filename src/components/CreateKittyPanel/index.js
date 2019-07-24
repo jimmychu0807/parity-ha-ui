@@ -17,7 +17,7 @@ class CreateKittyPanel extends React.Component {
     const account = form.querySelector("#create-kitty-account").value;
     const kitty_name = form.querySelector("#create-kitty-kname").value;
 
-    substrateService.create_kitty(account, kitty_name).then(res => console.log);
+    substrateService.createKitty(account, kitty_name).then(res => console.log);
   }
 
   render() {

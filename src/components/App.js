@@ -5,6 +5,7 @@ import React from 'react';
 import * as substrateService from '../services/substrateService'
 import AuctionInfo from './AuctionInfo';
 import CreateKittyPanel from './CreateKittyPanel';
+import CreateAuctionPanel from './CreateAuctionPanel';
 
 class App extends React.Component {
   async componentDidMount() {
@@ -20,6 +21,9 @@ class App extends React.Component {
         </div>
         <div className="m-2 p-2 border rounded">
           <CreateKittyPanel />
+        </div>
+        <div className="m-2 p-2 border rounded">
+          <CreateAuctionPanel />
         </div>
       </div>
     );

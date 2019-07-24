@@ -12,7 +12,7 @@ class AuctionInfo extends React.Component {
   }
 
   componentDidMount() {
-    substrateService.current_count().then(res => {
+    substrateService.objsCount().then(res => {
       this.setState({
         cnts: Object.assign({}, ...Object.keys(res).map(k => ({ [k]: res[k].toNumber()})))
       })
