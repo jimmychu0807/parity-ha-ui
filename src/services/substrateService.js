@@ -1,9 +1,11 @@
+import * as Obj from './objectService';
+
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const testKeyring = require('@polkadot/keyring/testing');
 
 const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/"
 
-async function connect() {
+export async function connect() {
   const api = await createApiWithTypes();
 
   const [ chain, nodeName, nodeVersion ] = await Promise.all([
@@ -15,7 +17,7 @@ async function connect() {
   console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
 }
 
-async function objsCount(acctId) {
+export async function objsCount(acctId) {
   const api = await createApiWithTypes();
   const isAcctId = acctId && acctId.length > 0;
   const [
@@ -29,7 +31,7 @@ async function objsCount(acctId) {
   return { ttKittiesCount, ttAuctionsCount, myKittiesCount };
 }
 
-async function createKitty(acctId, kitty_name) {
+export async function createKitty(acctId, kitty_name) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(acctId);
 
@@ -44,7 +46,23 @@ async function createKitty(acctId, kitty_name) {
     });
 }
 
-async function startAuction(acctId, kittyId, basePrice, endDateTime) {
+export async function fetchKitties() {
+  const api = await createApiWithTypes();
+
+  let kittiesCount = await api.query.catAuction.kittiesCount();
+  kittiesCount = kittiesCount.toNumber();
+
+  const kittyHashes = await Promise.all([...Array(kittiesCount).keys()].map(i =>
+    api.query.catAuction.kittiesArray(i))
+  );
+
+  const kitties = await Promise.all(kittyHashes.map(kid =>
+    api.query.catAuction.kitties(kid)));
+
+  return kitties.map(kitty => new Obj.Kitty(kitty));
+}
+
+export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(acctId);
 
@@ -58,6 +76,8 @@ async function startAuction(acctId, kittyId, basePrice, endDateTime) {
       }
     });
 }
+
+// -- private methods below
 
 async function getKeyPairAndNonce(acctId) {
   const api = await createApiWithTypes();
@@ -77,43 +97,10 @@ async function createApiWithTypes() {
       "BidStatus": {
         "_enum": [ "Active", "Withdrawn" ]
       },
-      "Kitty": {
-        "id": "Hash",
-        "name": "Option<Vec<u8>>",
-        "owner": "Option<AccountId>",
-        "owner_pos": "Option<u64>",
-        "in_auction": "bool"
-      },
-      "AuctionTx": {
-        "tx_time": "Moment",
-        "winner": "AccountId",
-        "tx_price": "Balance"
-      },
-      "Auction": {
-        "id": "Hash",
-        "kitty_id": "Hash",
-        "base_price": "Balance",
-        "start_time": "Moment",
-        "end_time": "Moment",
-        "status": "AuctionStatus",
-
-        "topmost_bids": "Vec<Hash>",
-        "price_to_topmost": "Balance",
-        "display_bids": "Vec<Hash>",
-        "display_bids_last_update": "Moment",
-
-        "tx": "Option<AuctionTx>"
-      },
-      "Bid": {
-        "id": "Hash",
-        "auction_id": "Hash",
-        "bidder": "AccountId",
-        "price": "Balance",
-        "last_update": "Moment",
-        "status": "BidStatus"
-      }
+      "Kitty": Obj.Kitty.objType,
+      "AuctionTx": Obj.AuctionTx.objType,
+      "Auction": Obj.Auction.objType,
+      "Bid": Obj.Bid.objType,
     }
   });
 }
-
-export { connect, objsCount, createKitty, startAuction }
