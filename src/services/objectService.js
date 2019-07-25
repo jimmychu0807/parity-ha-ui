@@ -1,3 +1,27 @@
+const moment = window.moment;
+
+export class AuctionStatus {
+  static get allStatuses() {
+    return([ "ongoing", "cancelled", "closed" ]);
+  }
+
+  constructor(parityObj) {
+    const obj = parityObj.toJSON();
+
+    if (obj.hasOwnProperty("Ongoing")) {
+      this.value = "ongoing";
+    } else if (obj.hasOwnProperty("Cancelled")) {
+      this.value = "cancelled";
+    } else if (obj.hasOwnProperty("Closed")) {
+      this.value = "closed";
+    } else {
+      throw "Unknown property checked";
+    }
+  }
+}
+
+export class BidStatus {}
+
 export class Kitty {
   static get objType() {
     return({
@@ -27,7 +51,11 @@ export class AuctionTx {
     });
   }
 
-  constructor(parityObj) {}
+  constructor(parityObj) {
+    this.tx_time = moment.unix(parityObj.tx_time.toJSON());
+    this.winner = parityObj.winner.toJSON();
+    this.tx_price = parityObj.tx_price.toJSON();
+  }
 }
 
 export class Auction {
@@ -47,7 +75,20 @@ export class Auction {
     });
   }
 
-  constructor(parityObj) {}
+  constructor(parityObj, bidsCountParityObj = null) {
+    this.id = parityObj.id.toJSON();
+    this.kitty_id = parityObj.kitty_id.toJSON();
+    this.base_price = parityObj.base_price.toJSON();
+    this.start_time = moment.unix(parityObj.start_time.toJSON());
+    this.end_time = moment.unix(parityObj.end_time.toJSON());
+    this.status = new AuctionStatus(parityObj.status);
+    this.topmost_bids = parityObj.topmost_bids.toJSON();
+    this.price_to_topmost = parityObj.price_to_topmost.toJSON();
+    this.display_bids = parityObj.display_bids.toJSON();
+    this.display_bids_last_update = moment.unix(parityObj.display_bids_last_update.toJSON());
+    this.tx = parityObj.tx.toJSON() && new AuctionTx(parityObj.tx);
+    this.bids_count = bidsCountParityObj && bidsCountParityObj.toJSON();
+  }
 }
 
 export class Bid {
@@ -61,6 +102,4 @@ export class Bid {
       "status": "BidStatus"
     });
   }
-
-  constructor(parityObj) {}
 }

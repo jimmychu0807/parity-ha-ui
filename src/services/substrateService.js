@@ -62,6 +62,25 @@ export async function fetchKitties() {
   return kitties.map(kitty => new Obj.Kitty(kitty));
 }
 
+export async function fetchAuctions() {
+  const api = await createApiWithTypes();
+
+  let auctionsCount = await api.query.catAuction.auctionsCount();
+  auctionsCount = auctionsCount.toNumber();
+
+  const auctionHashes = await Promise.all([...Array(auctionsCount).keys()].map(i =>
+    api.query.catAuction.auctionsArray(i))
+  );
+
+  const auctions = await Promise.all(auctionHashes.map(aid =>
+    api.query.catAuction.auctions(aid)));
+
+  const auctionBidsCount = await Promise.all(auctionHashes.map(aid =>
+    api.query.catAuction.auctionBidsCount(aid)));
+
+  return auctions.map((auction, i) => new Obj.Auction(auction, auctionBidsCount[i]));
+}
+
 export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(acctId);

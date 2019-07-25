@@ -14,7 +14,7 @@ class KittiesPanel extends React.Component {
 
   fetchKitties = async () => {
     let kitties = await substrateService.fetchKitties();
-    this.setState({ kitties: kitties });
+    this.setState({ kitties });
   }
 
   render() {
