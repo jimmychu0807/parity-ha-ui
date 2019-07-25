@@ -20,10 +20,11 @@ class App extends React.Component {
     this.state = {
       acctId: dataService.getAcctId(),
     };
+    this.auctionBidModalRef = React.createRef();
   }
 
-  async componentDidMount() {
-    // component did mount logic
+  componentDidMount() {
+    // just to show that it is connected to the substrate runtime via ws
     substrateService.connect();
   }
 
@@ -37,6 +38,11 @@ class App extends React.Component {
     this.setState({ acctId: '' });
     dataService.removeAcctId();
     window.location.reload();
+  }
+
+  updateAuctionBidModalHandler = (opt, callback) => {
+    const auctionBidModal = this.auctionBidModalRef.current;
+    auctionBidModal.setState(opt, callback);
   }
 
   render() {
@@ -63,10 +69,11 @@ class App extends React.Component {
             <KittiesPanel acctId={ acctId }/>
           </div>
           <div className="m-2 p-2 border rounded">
-            <AuctionsPanel acctId={ acctId }/>
+            <AuctionsPanel acctId={ acctId }
+              updateAuctionBidModalHandler = {this.updateAuctionBidModalHandler}/>
           </div>
         </div>
-        <AuctionBidModal />
+        <AuctionBidModal ref={this.auctionBidModalRef}/>
       </React.Fragment>
     );
   }

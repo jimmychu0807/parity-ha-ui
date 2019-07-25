@@ -81,6 +81,17 @@ export async function fetchAuctions() {
   return auctions.map((auction, i) => new Obj.Auction(auction, auctionBidsCount[i]));
 }
 
+export async function fetchUserAuctionBids(acctId, aids) {
+  let bids = await Promise.all(aids.map( aid => fetchUserAuctionBid(acctId, aid) ));
+  bids = bids.filter(bid => bid !== null);
+  return bids;
+}
+
+export async function fetchUserAuctionBid(acctId, aid) {
+  // TODO
+  return null;
+}
+
 export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(acctId);

@@ -37,7 +37,10 @@ class AuctionCard extends React.Component {
 
   bid = (ev) => {
     ev.preventDefault();
-    jQuery(AUCTION_BID_MODAL_ID).modal("show");
+    const { acctId, auction, acctBid, updateAuctionBidModalHandler } = this.props;
+    updateAuctionBidModalHandler({acctId, auction, acctBid}, () => {
+      jQuery(AUCTION_BID_MODAL_ID).modal("show");
+    });
   }
 
   cancelAuction = (ev) => {
