@@ -15,3 +15,7 @@ code {
 .font-small {
   font-size: small;
 }
+
+.w-85 {
+  width: 85px;
+}

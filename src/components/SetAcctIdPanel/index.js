@@ -36,8 +36,8 @@ class SetAcctIdPanel extends React.Component {
 
             <div className="col-sm-3 my-1">
               { acctId && acctId.length > 0
-                ? <button type="button" className="btn btn-primary" onClick={ this.handleClear }>Clear</button>
-                : <button type="submit" className="btn btn-primary">Set</button>
+                ? <button type="button" className="btn btn-primary w-85" onClick={ this.handleClear }>Clear</button>
+                : <button type="submit" className="btn btn-primary w-85">Set</button>
               }
             </div>
           </div>

@@ -14,8 +14,6 @@ export class AuctionStatus {
       this.value = "cancelled";
     } else if (obj.hasOwnProperty("Closed")) {
       this.value = "closed";
-    } else {
-      throw "Unknown property checked";
     }
   }
 }

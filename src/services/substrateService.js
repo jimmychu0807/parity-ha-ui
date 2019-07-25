@@ -96,6 +96,36 @@ export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
     });
 }
 
+export async function closeAuction(acctId, auctionId) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+
+  api.tx.catAuction
+    .closeAuctionAndTx(auctionId)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({ev = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      }
+    });
+}
+
+export async function cancelAuction(acctId, auctionId) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+
+  api.tx.catAuction
+    .cancelAuction(auctionId)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({ev = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      }
+    });
+}
+
 // -- private methods below
 
 async function getKeyPairAndNonce(acctId) {

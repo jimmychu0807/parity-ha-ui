@@ -1,17 +1,55 @@
 import React from 'react';
 
+// own code & libraries
+import * as substrateService from '../services/substrateService';
+
+const moment = window.moment();
+const jQuery = window.jQuery;
+const AUCTION_BID_MODAL_ID = "#auctionBidModal";
+
 class AuctionCard extends React.Component {
 
   showBidBtn = () => {
-    return true;
+    // if not auction kitty owner && status == ongoing && not exceed auction.end_time yet
+    const { auction, kitty, acctId } = this.props;
+    return !( !acctId || acctId.length === 0 ||
+      auction.status.value !== "ongoing" ||
+      moment.unix() > auction.end_time.unix() ||
+      acctId === kitty.owner);
   }
 
   showCancelBtn = () => {
-    return true;
+    // if status == ongoing && bidCount == 0 && not exceed auction.end_time yet
+    const { auction, acctId } = this.props;
+    return !(!acctId || acctId.length === 0 ||
+      auction.status.value !== "ongoing" ||
+      auction.bids_count > 0 ||
+      moment.unix() > auction.end_time.unix());
   }
 
   showCloseBtn = () => {
-    return true;
+    // if status == ongoing && exceed auction.end_time
+    const { auction, acctId } = this.props;
+    return (acctId && acctId.length > 0 &&
+      moment.unix() > auction.end_time.unix() &&
+      auction.status.value === "ongoing");
+  }
+
+  bid = (ev) => {
+    ev.preventDefault();
+    jQuery(AUCTION_BID_MODAL_ID).modal("show");
+  }
+
+  cancelAuction = (ev) => {
+    ev.preventDefault();
+    const { auction, acctId } = this.props;
+    substrateService.cancelAuction(acctId, auction.id);
+  }
+
+  closeAuction = (ev) => {
+    ev.preventDefault();
+    const { auction, acctId } = this.props;
+    substrateService.closeAuction(acctId, auction.id);
   }
 
   render() {
@@ -61,18 +99,18 @@ class AuctionCard extends React.Component {
         <div className="card-body p-2">
           <div className="row">
             { this.showBidBtn() && (
-              <div className="col-auto mr-auto">
-                <button className = "btn btn-primary">Bid</button>
+              <div className="col-auto mx-auto">
+                <button className = "btn btn-primary w-85" onClick={this.bid}>Bid</button>
               </div>
             ) }
             { this.showCancelBtn() && (
-              <div className="col-auto mr-auto">
-                <button className = "btn btn-primary">Cancel</button>
+              <div className="col-auto mx-auto">
+                <button className = "btn btn-primary w-85" onClick={this.cancelAuction}>Cancel</button>
               </div>
             ) }
             { this.showCloseBtn() && (
-              <div className="col-auto mr-auto">
-                <button className = "btn btn-primary">Close</button>
+              <div className="col-auto mx-auto">
+                <button className = "btn btn-primary w-85" onClick={this.closeAuction}>Close</button>
               </div>
             ) }
           </div>
