@@ -1,24 +1,31 @@
 const moment = window.moment;
 
 export class AuctionStatus {
-  static get allStatuses() {
-    return([ "ongoing", "cancelled", "closed" ]);
+  static get objType() {
+    return({ "_enum": [ "Ongoing", "Cancelled", "Closed" ] });
   }
 
-  constructor(parityObj) {
-    const obj = parityObj.toJSON();
-
-    if (obj.hasOwnProperty("Ongoing")) {
-      this.value = "ongoing";
-    } else if (obj.hasOwnProperty("Cancelled")) {
-      this.value = "cancelled";
-    } else if (obj.hasOwnProperty("Closed")) {
-      this.value = "closed";
-    }
+  static status(parityStatus) {
+    const obj = parityStatus.toJSON();
+    if (obj.hasOwnProperty("Ongoing")) return "ongoing";
+    if (obj.hasOwnProperty("Cancelled")) return "cancelled";
+    if (obj.hasOwnProperty("Closed")) return "closed";
+    throw `Unknown AuctionStatus: ${parityStatus}`;
   }
 }
 
-export class BidStatus {}
+export class BidStatus {
+  static get objType() {
+    return({ "_enum": [ "Active", "Withdrawn" ] });
+  }
+
+  static status(parityStatus) {
+    const obj = parityStatus.toJSON();
+    if (obj.hasOwnProperty("Active")) return "active";
+    if (obj.hasOwnProperty("Withdrawn")) return "withdrawn";
+    throw `Unknown BidStatus: ${parityStatus}`;
+  }
+}
 
 export class Kitty {
   static get objType() {
@@ -79,7 +86,7 @@ export class Auction {
     this.base_price = parityObj.base_price.toJSON();
     this.start_time = moment.unix(parityObj.start_time.toJSON());
     this.end_time = moment.unix(parityObj.end_time.toJSON());
-    this.status = new AuctionStatus(parityObj.status);
+    this.status = AuctionStatus.status(parityObj.status);
     this.topmost_bids = parityObj.topmost_bids.toJSON();
     this.price_to_topmost = parityObj.price_to_topmost.toJSON();
     this.display_bids = parityObj.display_bids.toJSON();
@@ -99,5 +106,14 @@ export class Bid {
       "last_update": "Moment",
       "status": "BidStatus"
     });
+  }
+
+  constructor(parityObj) {
+    this.id = parityObj.id.toJSON();
+    this.auction_id = parityObj.auction_id.toJSON();
+    this.bidder = parityObj.bidder.toJSON();
+    this.price = parityObj.price.toJSON();
+    this.last_update = moment.unix(parityObj.last_update.toJSON());
+    this.status = new BidStatus(parityObj.status);
   }
 }

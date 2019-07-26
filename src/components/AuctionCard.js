@@ -13,7 +13,7 @@ class AuctionCard extends React.Component {
     // if not auction kitty owner && status == ongoing && not exceed auction.end_time yet
     const { auction, kitty, acctId } = this.props;
     return !( !acctId || acctId.length === 0 ||
-      auction.status.value !== "ongoing" ||
+      auction.status !== "ongoing" ||
       moment.unix() > auction.end_time.unix() ||
       acctId === kitty.owner);
   }
@@ -22,7 +22,7 @@ class AuctionCard extends React.Component {
     // if status == ongoing && bidCount == 0 && not exceed auction.end_time yet
     const { auction, acctId } = this.props;
     return !(!acctId || acctId.length === 0 ||
-      auction.status.value !== "ongoing" ||
+      auction.status !== "ongoing" ||
       auction.bids_count > 0 ||
       moment.unix() > auction.end_time.unix());
   }
@@ -32,7 +32,7 @@ class AuctionCard extends React.Component {
     const { auction, acctId } = this.props;
     return (acctId && acctId.length > 0 &&
       moment.unix() > auction.end_time.unix() &&
-      auction.status.value === "ongoing");
+      auction.status === "ongoing");
   }
 
   bid = (ev) => {
@@ -69,7 +69,7 @@ class AuctionCard extends React.Component {
 
           <div className="row no-gutters my-1">
             <div className="col-3 col-sm-2 font-small">status:</div>
-            <div className="col-9 col-sm-10 font-small">{auction.status.value }</div>
+            <div className="col-9 col-sm-10 font-small">{auction.status }</div>
           </div>
 
           <div className="row no-gutters my-1">

@@ -3,7 +3,8 @@ import * as Obj from './objectService';
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const testKeyring = require('@polkadot/keyring/testing');
 
-const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/"
+const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/";
+const NULL_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export async function connect() {
   const api = await createApiWithTypes();
@@ -88,8 +89,13 @@ export async function fetchUserAuctionBids(acctId, aids) {
 }
 
 export async function fetchUserAuctionBid(acctId, aid) {
-  // TODO
-  return null;
+  const api = await createApiWithTypes();
+  const bid_id = await api.query.catAuction.auctionBidderBids([aid, acctId]);
+
+  if (bid_id.toJSON() === NULL_ID) return null;
+
+  const bid = await api.query.catAuction.bids(bid_id);
+  return new Obj.Bid(bid);
 }
 
 export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
@@ -137,6 +143,21 @@ export async function cancelAuction(acctId, auctionId) {
     });
 }
 
+export async function bid(acctId, auctionId, bidPrice) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+
+  api.tx.catAuction
+    .bid(auctionId, bidPrice)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({ev = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      }
+    });
+}
+
 // -- private methods below
 
 async function getKeyPairAndNonce(acctId) {
@@ -151,12 +172,8 @@ async function createApiWithTypes() {
   return await ApiPromise.create({
     provider: new WsProvider(SUBSTRATE_ADDR),
     types: {
-      "AuctionStatus": {
-        "_enum": [ "Ongoing", "Cancelled", "Closed" ]
-      },
-      "BidStatus": {
-        "_enum": [ "Active", "Withdrawn" ]
-      },
+      "AuctionStatus": Obj.AuctionStatus.objType,
+      "BidStatus": Obj.BidStatus.objType,
       "Kitty": Obj.Kitty.objType,
       "AuctionTx": Obj.AuctionTx.objType,
       "Auction": Obj.Auction.objType,

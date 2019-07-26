@@ -1,5 +1,10 @@
 import React from 'react';
 
+import * as substrateService from '../services/substrateService';
+
+const MODAL_ID = "#auctionBidModal";
+const jQuery = window.jQuery;
+
 class AuctionBidModal extends React.Component {
   constructor(props) {
     super(props);
@@ -8,6 +13,30 @@ class AuctionBidModal extends React.Component {
       acctId: null,
       acctBid: null,
     }
+
+    this.formRef = React.createRef();
+  }
+
+  handleBid = (ev) => {
+    ev.preventDefault();
+
+    const form = this.formRef.current;
+    const { auction, acctId, acctBid } = this.state;
+    const bidPrice = form.querySelector("#auctionBidModal-yourBid").value;
+
+    // TODO: handle the error case when the new bid is less than the current bid
+    if (!acctBid || bidPrice > acctBid.price) {
+      substrateService.bid(acctId, auction.id, bidPrice);
+    }
+
+    // handling UI stuff
+    this.clearFormAndHide();
+  }
+
+  clearFormAndHide = () => {
+    const form = this.formRef.current;
+    form.querySelector("#auctionBidModal-yourBid").value = '';
+    jQuery(MODAL_ID).modal("hide");
   }
 
   render() {
@@ -27,7 +56,7 @@ class AuctionBidModal extends React.Component {
               </button>
             </div>
 
-            <form className="modal-body">
+            <form id="auctionBidForm" className="modal-body" ref={this.formRef}>
               <div className="row">
                 <label htmlFor="auctionBidModal-aid" className="col-sm-4 col-form-label">Auction ID</label>
                 <div className="col-sm-8">
@@ -72,7 +101,7 @@ class AuctionBidModal extends React.Component {
             </form>
 
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary w-85">Bid</button>
+              <button type="button" className="btn btn-primary w-85" onClick={this.handleBid}>Bid</button>
             </div>
 
           </div>
