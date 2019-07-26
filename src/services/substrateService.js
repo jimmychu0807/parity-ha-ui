@@ -47,6 +47,11 @@ export async function createKitty(acctId, kitty_name) {
     });
 }
 
+export async function fetchFreeBalance(acctId) {
+  const api = await createApiWithTypes();
+  return (await api.query.balances.freeBalance(acctId)).toJSON();
+}
+
 export async function fetchKitties() {
   const api = await createApiWithTypes();
 
