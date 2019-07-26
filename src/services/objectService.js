@@ -6,10 +6,9 @@ export class AuctionStatus {
   }
 
   static status(parityStatus) {
-    const obj = parityStatus.toJSON();
-    if (obj.hasOwnProperty("Ongoing")) return "ongoing";
-    if (obj.hasOwnProperty("Cancelled")) return "cancelled";
-    if (obj.hasOwnProperty("Closed")) return "closed";
+    if (parityStatus.hasOwnProperty("Ongoing")) return "ongoing";
+    if (parityStatus.hasOwnProperty("Cancelled")) return "cancelled";
+    if (parityStatus.hasOwnProperty("Closed")) return "closed";
     throw `Unknown AuctionStatus: ${parityStatus}`;
   }
 }
@@ -20,9 +19,8 @@ export class BidStatus {
   }
 
   static status(parityStatus) {
-    const obj = parityStatus.toJSON();
-    if (obj.hasOwnProperty("Active")) return "active";
-    if (obj.hasOwnProperty("Withdrawn")) return "withdrawn";
+    if (parityStatus.hasOwnProperty("Active")) return "active";
+    if (parityStatus.hasOwnProperty("Withdrawn")) return "withdrawn";
     throw `Unknown BidStatus: ${parityStatus}`;
   }
 }
@@ -39,11 +37,9 @@ export class Kitty {
   }
 
   constructor(parityObj) {
-    this.id = parityObj.id.toJSON();
-    this.name = parityObj.name.toJSON().map(code => String.fromCharCode(code)).join("");
-    this.in_auction = parityObj.in_auction.toJSON();
-    this.owner = parityObj.owner.toJSON();
-    this.owner_pos = parityObj.owner_pos.toJSON();
+    let obj = parityObj.toJSON();
+    obj.name = obj.name.map(c => String.fromCharCode(c)).join("");
+    return obj;
   }
 }
 
@@ -57,9 +53,9 @@ export class AuctionTx {
   }
 
   constructor(parityObj) {
-    this.tx_time = moment.unix(parityObj.tx_time.toJSON());
-    this.winner = parityObj.winner.toJSON();
-    this.tx_price = parityObj.tx_price.toJSON();
+    let obj = parityObj.toJSON();
+    obj.tx_time = moment.unix(obj.tx_time);
+    return obj;
   }
 }
 
@@ -81,18 +77,14 @@ export class Auction {
   }
 
   constructor(parityObj, bidsCountParityObj = null) {
-    this.id = parityObj.id.toJSON();
-    this.kitty_id = parityObj.kitty_id.toJSON();
-    this.base_price = parityObj.base_price.toJSON();
-    this.start_time = moment.unix(parityObj.start_time.toJSON());
-    this.end_time = moment.unix(parityObj.end_time.toJSON());
-    this.status = AuctionStatus.status(parityObj.status);
-    this.topmost_bids = parityObj.topmost_bids.toJSON();
-    this.price_to_topmost = parityObj.price_to_topmost.toJSON();
-    this.display_bids = parityObj.display_bids.toJSON();
-    this.display_bids_last_update = moment.unix(parityObj.display_bids_last_update.toJSON());
-    this.tx = parityObj.tx.toJSON() && new AuctionTx(parityObj.tx);
-    this.bids_count = bidsCountParityObj && bidsCountParityObj.toJSON();
+    let obj = parityObj.toJSON();
+    obj.start_time = moment.unix(obj.start_time);
+    obj.end_time = moment.unix(obj.end_time);
+    obj.display_bids_last_update = moment.unix(obj.display_bids_last_update);
+    obj.status = AuctionStatus.status(obj.status);
+    obj.tx = parityObj.tx.toJSON() && new AuctionTx(parityObj.tx);
+    obj.bids_count = bidsCountParityObj && bidsCountParityObj.toJSON();
+    return obj;
   }
 }
 
@@ -109,11 +101,9 @@ export class Bid {
   }
 
   constructor(parityObj) {
-    this.id = parityObj.id.toJSON();
-    this.auction_id = parityObj.auction_id.toJSON();
-    this.bidder = parityObj.bidder.toJSON();
-    this.price = parityObj.price.toJSON();
-    this.last_update = moment.unix(parityObj.last_update.toJSON());
-    this.status = new BidStatus(parityObj.status);
+    let obj = parityObj.toJSON();
+    obj.last_update = moment.unix(obj.last_update);
+    obj.status = BidStatus.status(obj.status);
+    return obj;
   }
 }

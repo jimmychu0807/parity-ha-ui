@@ -3,7 +3,7 @@ import * as Obj from './objectService';
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const testKeyring = require('@polkadot/keyring/testing');
 
-const SUBSTRATE_ADDR = "ws://127.0.0.1:9944/";
+const SUBSTRATE_ADDR = process.env.SUBSTRATE_ADDR;
 const NULL_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export async function connect() {
