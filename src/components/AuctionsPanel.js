@@ -1,9 +1,9 @@
 import React from 'react';
 
 // our own code
-import AuctionCard from '../AuctionCard';
+import AuctionCard from './AuctionCard';
 
-import * as substrateService from '../../services/substrateService';
+import * as substrateService from '../services/substrateService';
 
 class AuctionsPanel extends React.Component {
   constructor(props) {

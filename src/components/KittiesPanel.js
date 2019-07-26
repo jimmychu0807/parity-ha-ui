@@ -1,9 +1,9 @@
 import React from 'react';
 
 // our own code
-import KittyCard from '../KittyCard';
+import KittyCard from './KittyCard';
 
-import * as substrateService from '../../services/substrateService';
+import * as substrateService from '../services/substrateService';
 
 class KittiesPanel extends React.Component {
   constructor(props) {
