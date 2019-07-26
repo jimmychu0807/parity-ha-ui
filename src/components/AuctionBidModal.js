@@ -2,8 +2,8 @@ import React from 'react';
 
 import * as substrateService from '../services/substrateService';
 
-const MODAL_ID = "#auctionBidModal";
 const jQuery = window.jQuery;
+const BIDPRICE_INPUT_ID = "auctionBidModal-yourBid";
 
 class AuctionBidModal extends React.Component {
   constructor(props) {
@@ -14,15 +14,15 @@ class AuctionBidModal extends React.Component {
       acctBid: null,
     }
 
-    this.formRef = React.createRef();
+    this.modalRef = React.createRef();
   }
 
   handleBid = (ev) => {
     ev.preventDefault();
 
-    const form = this.formRef.current;
+    const modal = this.modalRef.current;
     const { auction, acctId, acctBid } = this.state;
-    const bidPrice = form.querySelector("#auctionBidModal-yourBid").value;
+    const bidPrice = modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value;
 
     // TODO: handle the error case when the new bid is less than the current bid
     if (!acctBid || bidPrice > acctBid.price) {
@@ -34,9 +34,9 @@ class AuctionBidModal extends React.Component {
   }
 
   clearFormAndHide = () => {
-    const form = this.formRef.current;
-    form.querySelector("#auctionBidModal-yourBid").value = '';
-    jQuery(MODAL_ID).modal("hide");
+    const modal = this.modalRef.current;
+    modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value = '';
+    jQuery(modal).modal("hide");
   }
 
   render() {
@@ -46,7 +46,7 @@ class AuctionBidModal extends React.Component {
 
     return(
       <div id="auctionBidModal" className="modal fade" tabIndex="-1" role="dialog"
-        aria-hidden="true" data-backdrop='static'>
+        aria-hidden="true" data-backdrop='static' ref={this.modalRef}>
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
             <div className="modal-header">
@@ -56,7 +56,7 @@ class AuctionBidModal extends React.Component {
               </button>
             </div>
 
-            <form id="auctionBidForm" className="modal-body" ref={this.formRef}>
+            <form id="auctionBidForm" className="modal-body">
               <div className="row">
                 <label htmlFor="auctionBidModal-aid" className="col-sm-4 col-form-label">Auction ID</label>
                 <div className="col-sm-8">
@@ -90,11 +90,11 @@ class AuctionBidModal extends React.Component {
               </div>) }
 
               <div className="row">
-                <label htmlFor="auctionBidModal-yourBid" className="col-sm-4 col-form-label">
+                <label htmlFor={BIDPRICE_INPUT_ID} className="col-sm-4 col-form-label">
                   { acctBid ? "Your new bid" : "Your bid" }
                 </label>
                 <div className="col-sm-8">
-                  <input id="auctionBidModal-yourBid" type="number"
+                  <input id={BIDPRICE_INPUT_ID} type="number"
                     className="form-control" defaultValue={acctBid ? acctBid.price : ""}/>
                 </div>
               </div>

@@ -39,7 +39,7 @@ class AuctionInfo extends React.Component {
       <h5>Info</h5>
       <div className="row">
         <div className="col-12">
-          Current ID:
+          Current Account:
           <strong> { acctId }</strong>
         </div>
       </div>

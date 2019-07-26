@@ -4,11 +4,12 @@ import React from 'react';
 // our own codes
 import SetAcctIdPanel from './SetAcctIdPanel';
 import AuctionInfo from './AuctionInfo';
-import CreateKittyPanel from './CreateKittyPanel';
-import CreateAuctionPanel from './CreateAuctionPanel';
 import KittiesPanel from './KittiesPanel';
 import AuctionsPanel from './AuctionsPanel';
+
 import AuctionBidModal from './AuctionBidModal';
+import CreateKittyModal from './CreateKittyModal';
+import CreateAuctionModal from './CreateAuctionModal';
 
 // services
 import * as substrateService from '../services/substrateService'
@@ -21,6 +22,8 @@ class App extends React.Component {
       acctId: dataService.getAcctId(),
     };
     this.auctionBidModalRef = React.createRef();
+    this.createKittyModalRef = React.createRef();
+    this.createAuctionModalRef = React.createRef();
   }
 
   componentDidMount() {
@@ -45,8 +48,21 @@ class App extends React.Component {
     auctionBidModal.setState(opt, callback);
   }
 
+  showCreateKittyModal = (ev) => {
+    ev.preventDefault();
+    const modal = this.createKittyModalRef.current;
+    modal.showModal();
+  }
+
+  showCreateAuctionModal = (ev) => {
+    ev.preventDefault();
+    const modal = this.createAuctionModalRef.current;
+    modal.showModal();
+  }
+
   render() {
     const { acctId } = this.state;
+    const isAcctId = acctId && acctId.length > 0;
 
     return (
       <React.Fragment>
@@ -59,21 +75,32 @@ class App extends React.Component {
           <div className="m-2 p-2 border rounded">
             <AuctionInfo acctId={ acctId }/>
           </div>
+
           <div className="m-2 p-2 border rounded">
-            <CreateKittyPanel acctId={ acctId }/>
+            <div className="row">
+              <div className="col-6">
+                <button className="btn btn-primary btn-block" onClick={ this.showCreateKittyModal }
+                  disabled={!isAcctId}>Create Kitty</button>
+              </div>
+              <div className="col-6">
+                <button className="btn btn-primary btn-block" onClick={ this.showCreateAuctionModal }
+                  disabled={!isAcctId}>Create Auction</button>
+              </div>
+            </div>
           </div>
-          <div className="m-2 p-2 border rounded">
-            <CreateAuctionPanel acctId={ acctId }/>
-          </div>
+
           <div className="m-2 p-2 border rounded">
             <KittiesPanel acctId={ acctId }/>
           </div>
+
           <div className="m-2 p-2 border rounded">
             <AuctionsPanel acctId={ acctId }
               updateAuctionBidModalHandler = {this.updateAuctionBidModalHandler}/>
           </div>
         </div>
         <AuctionBidModal ref={this.auctionBidModalRef}/>
+        <CreateKittyModal acctId={acctId} ref={this.createKittyModalRef}/>
+        <CreateAuctionModal acctId={acctId} ref={this.createAuctionModalRef}/>
       </React.Fragment>
     );
   }
