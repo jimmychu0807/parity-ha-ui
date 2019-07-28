@@ -3,7 +3,7 @@ import * as Obj from './objectService';
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const testKeyring = require('@polkadot/keyring/testing');
 
-const SUBSTRATE_ADDR = process.env.SUBSTRATE_ADDR;
+const SUBSTRATE_ADDR = process.env.REACT_APP_SUBSTRATE_ADDR;
 const NULL_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 export async function connect() {
@@ -30,21 +30,6 @@ export async function objsCount(acctId) {
   ]);
 
   return { ttKittiesCount, ttAuctionsCount, myKittiesCount };
-}
-
-export async function createKitty(acctId, kitty_name) {
-  const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
-
-  api.tx.catAuction
-    .createKitty(kitty_name)
-    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({ev = [], status}) => {
-      console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-      }
-    });
 }
 
 export async function fetchFreeBalance(acctId) {
@@ -103,29 +88,66 @@ export async function fetchUserAuctionBid(acctId, aid) {
   return new Obj.Bid(bid);
 }
 
+export async function createKitty(acctId, kitty_name, {startCallback, finishCallback}) {
+  const api = await createApiWithTypes();
+  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
+
+  api.tx.catAuction
+    .createKitty(kitty_name)
+    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
+    .send( ({events = [], status}) => {
+      console.log('Transaction status:', status.type);
+      if (status.isFinalized) {
+        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+
+        console.log("events", events);
+        console.log("status", status);
+        // debugger;
+      }
+      else {
+        console.log("running...");
+        startCallback("catAuction", "running...");
+      }
+    });
+}
+
 export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
   const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
   api.tx.catAuction
     .startAuction(kittyId, endDateTime, basePrice)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({ev = [], status}) => {
+    .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
       if (status.isFinalized) {
         console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+        console.log("events", events);
+        console.log("status", status);
+
+        // check that event doesn't have ExtrinsicFailed type, then show the event for 3 sec. and disappear
+        debugger;
+      }
+      else if (status.isInvalid) {
+        console.log("invalid");
+        console.log("events", events);
+        console.log("status", status);
+        debugger;
+      } else {
+        // have a modal showing writing to blockchain
+        console.log("running...");
       }
     });
 }
 
 export async function closeAuction(acctId, auctionId) {
   const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
   api.tx.catAuction
     .closeAuctionAndTx(auctionId)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({ev = [], status}) => {
+    .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
       if (status.isFinalized) {
         console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
@@ -135,12 +157,12 @@ export async function closeAuction(acctId, auctionId) {
 
 export async function cancelAuction(acctId, auctionId) {
   const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
   api.tx.catAuction
     .cancelAuction(auctionId)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({ev = [], status}) => {
+    .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
       if (status.isFinalized) {
         console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
@@ -150,12 +172,12 @@ export async function cancelAuction(acctId, auctionId) {
 
 export async function bid(acctId, auctionId, bidPrice) {
   const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(acctId);
+  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
   api.tx.catAuction
     .bid(auctionId, bidPrice)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({ev = [], status}) => {
+    .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
       if (status.isFinalized) {
         console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
@@ -165,8 +187,7 @@ export async function bid(acctId, auctionId, bidPrice) {
 
 // -- private methods below
 
-async function getKeyPairAndNonce(acctId) {
-  const api = await createApiWithTypes();
+async function getKeyPairAndNonce(api, acctId) {
   const keyring = testKeyring.default();
   const nonce = await api.query.system.accountNonce(acctId);
   const keyPair = keyring.getPair(acctId);

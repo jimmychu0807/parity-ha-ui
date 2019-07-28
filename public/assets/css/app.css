@@ -19,3 +19,20 @@ code {
 .w-85 {
   width: 85px;
 }
+
+#toasts-root {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.toasts-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.toasts-positioning {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
