@@ -9,7 +9,7 @@ export class AuctionStatus {
     if (parityStatus.hasOwnProperty("Ongoing")) return "ongoing";
     if (parityStatus.hasOwnProperty("Cancelled")) return "cancelled";
     if (parityStatus.hasOwnProperty("Closed")) return "closed";
-    throw `Unknown AuctionStatus: ${parityStatus}`;
+    throw new Error(`Unknown AuctionStatus: ${parityStatus}`);
   }
 }
 
@@ -21,7 +21,7 @@ export class BidStatus {
   static status(parityStatus) {
     if (parityStatus.hasOwnProperty("Active")) return "active";
     if (parityStatus.hasOwnProperty("Withdrawn")) return "withdrawn";
-    throw `Unknown BidStatus: ${parityStatus}`;
+    throw new Error(`Unknown BidStatus: ${parityStatus}`);
   }
 }
 
