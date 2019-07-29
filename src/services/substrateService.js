@@ -126,52 +126,19 @@ export async function startAuction(acctId, kittyId, basePrice, endDateTime, call
   substrateTx(acctId, api => api.startAuction(kittyId, endDateTime, basePrice), callbacks);
 }
 
-export async function closeAuction(acctId, auctionId) {
-  const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
-
-  api.tx.catAuction
-    .closeAuctionAndTx(auctionId)
-    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({events = [], status}) => {
-      console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-      }
-    });
+export async function closeAuction(acctId, auctionId, callbacks) {
+  substrateTx(acctId, api => api.closeAuctionAndTx(auctionId), callbacks);
 }
 
-export async function cancelAuction(acctId, auctionId) {
-  const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
-
-  api.tx.catAuction
-    .cancelAuction(auctionId)
-    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({events = [], status}) => {
-      console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-      }
-    });
+export async function cancelAuction(acctId, auctionId, callbacks) {
+  substrateTx(acctId, api => api.cancelAuction(auctionId), callbacks);
 }
 
-export async function bid(acctId, auctionId, bidPrice) {
-  const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
-
-  api.tx.catAuction
-    .bid(auctionId, bidPrice)
-    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({events = [], status}) => {
-      console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-      }
-    });
+export async function bid(acctId, auctionId, bidPrice, callbacks) {
+  substrateTx(acctId, api => api.bid(auctionId, bidPrice), callbacks);
 }
 
-// -- private methods below
+// -- private(not exported) methods below
 
 async function getKeyPairAndNonce(api, acctId) {
   const keyring = testKeyring.default();

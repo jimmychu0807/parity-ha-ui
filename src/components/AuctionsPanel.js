@@ -24,7 +24,8 @@ class AuctionsPanel extends React.Component {
   }
 
   render() {
-    const { acctId, updateAuctionBidModalHandler } = this.props;
+    const { acctId, updateAuctionBidModalHandler, insertToastMsgHandler,
+      refreshAuctionsHandler } = this.props;
     const { auctions, kitties, bids } = this.state;
 
     return(
@@ -35,6 +36,8 @@ class AuctionsPanel extends React.Component {
             <AuctionCard count={i} auction={auction} acctId={acctId}
               kitty={kitties.find(kitty => kitty.id === auction.kitty_id)}
               acctBid={bids.find(bid => bid.auction_id === auction.id)}
+              insertToastMsgHandler={insertToastMsgHandler}
+              refreshAuctionsHandler={refreshAuctionsHandler}
               updateAuctionBidModalHandler = {updateAuctionBidModalHandler}/>
           </div>
         ) }</div>

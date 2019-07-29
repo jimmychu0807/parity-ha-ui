@@ -38,21 +38,35 @@ class AuctionCard extends React.Component {
   bid = (ev) => {
     ev.preventDefault();
     const { acctId, auction, acctBid, updateAuctionBidModalHandler } = this.props;
-    updateAuctionBidModalHandler({acctId, auction, acctBid}, () => {
-      jQuery(AUCTION_BID_MODAL_ID).modal("show");
-    });
+    updateAuctionBidModalHandler({acctId, auction, acctBid}, () =>
+      jQuery(AUCTION_BID_MODAL_ID).modal("show")
+    );
   }
 
   cancelAuction = (ev) => {
     ev.preventDefault();
-    const { auction, acctId } = this.props;
-    substrateService.cancelAuction(acctId, auction.id);
+    const { auction, acctId, insertToastMsgHandler, refreshAuctionsHandler } = this.props;
+    substrateService.cancelAuction(acctId, auction.id, {
+      eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
+      successCallback: (title, content) => {
+        insertToastMsgHandler(title, content, "success", true);
+        refreshAuctionsHandler();
+      },
+      failureCallback: (title, content) => insertToastMsgHandler(title, content, "failure", true),
+    });
   }
 
   closeAuction = (ev) => {
     ev.preventDefault();
-    const { auction, acctId } = this.props;
-    substrateService.closeAuction(acctId, auction.id);
+    const { auction, acctId, insertToastMsgHandler, refreshAuctionsHandler } = this.props;
+    substrateService.closeAuction(acctId, auction.id, {
+      eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
+      successCallback: (title, content) => {
+        insertToastMsgHandler(title, content, "success", true);
+        refreshAuctionsHandler();
+      },
+      failureCallback: (title, content) => insertToastMsgHandler(title, content, "failure", true),
+    });
   }
 
   render() {
