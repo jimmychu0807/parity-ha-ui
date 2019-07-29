@@ -27,13 +27,16 @@ class CreateKittyModal extends React.Component {
     ev.preventDefault();
 
     let modal = this.modalRef.current;
-    const {acctId, insertToastMsgHandler} = this.props;
+    const { acctId, insertToastMsgHandler, refreshKittiesHandler } = this.props;
     const kitty_name = modal.querySelector(`#${KITTY_NAME_INPUT_ID}`).value;
 
     substrateService.createKitty(acctId, kitty_name, {
-      eventCallback: (title, content) => insertToastMsgHandler(title, content, false),
-      successCallback: (title, content) => insertToastMsgHandler(title, content, true),
-      failureCallback: (title, content) => insertToastMsgHandler(title, content, true),
+      eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
+      successCallback: (title, content) => {
+        insertToastMsgHandler(title, content, "success", true);
+        refreshKittiesHandler();
+      },
+      failureCallback: (title, content) => insertToastMsgHandler(title, content, "failure", true),
     });
 
     // handling UI stuff

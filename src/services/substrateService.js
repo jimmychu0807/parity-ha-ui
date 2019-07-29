@@ -88,12 +88,13 @@ export async function fetchUserAuctionBid(acctId, aid) {
   return new Obj.Bid(bid);
 }
 
-export async function createKitty(acctId, kitty_name, {eventCallback, successCallback, failureCallback}) {
-  const api = await createApiWithTypes();
+export async function substrateTx(acctId, mainCallback,
+  {eventCallback, successCallback, failureCallback}) {
+  let api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
-  api.tx.catAuction
-    .createKitty(kitty_name)
+  api = api.tx.catAuction;
+  mainCallback(api)
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
     .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
@@ -115,6 +116,10 @@ export async function createKitty(acctId, kitty_name, {eventCallback, successCal
         eventCallback("Substrate", "Submitting transaction...");
       }
     });
+}
+
+export async function createKitty(acctId, kitty_name, callbacks) {
+  substrateTx(acctId, api => api.createKitty(kitty_name), callbacks);
 }
 
 export async function startAuction(acctId, kittyId, basePrice, endDateTime) {

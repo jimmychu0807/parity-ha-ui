@@ -27,6 +27,8 @@ class App extends React.Component {
     this.createKittyModalRef = React.createRef();
     this.createAuctionModalRef = React.createRef();
     this.eventToastRef = React.createRef();
+    this.kittiesPanelRef = React.createRef();
+    this.auctionInfoRef = React.createRef();
   }
 
   componentDidMount() {
@@ -63,11 +65,22 @@ class App extends React.Component {
     modal.showModal();
   }
 
-  insertToastMsg = (title, content, bAutoHide) => {
+  insertToastMsg = (title, content, msgStatus, bAutoHide) => {
     let { toastMsgs } = this.state;
-    toastMsgs.push({title, content});
+    toastMsgs.push({title, content, msgStatus});
     this.setState({toastMsgs});
-    this.eventToastRef.current.showToasts(bAutoHide);
+    this.eventToastRef.current.showToasts(bAutoHide, this.rmToastMsgs);
+  }
+
+  rmToastMsgs = () => {
+    this.setState({ toastMsgs: []});
+  }
+
+  refreshKitties = () => {
+    const kittiesPanel = this.kittiesPanelRef.current;
+    kittiesPanel.fetchKitties();
+    const auctionInfo = this.auctionInfoRef.current;
+    auctionInfo.refreshData();
   }
 
   render() {
@@ -83,7 +96,7 @@ class App extends React.Component {
           </div>
 
           <div className="m-2 p-2 border rounded">
-            <AuctionInfo acctId={ acctId }/>
+            <AuctionInfo ref={this.auctionInfoRef} acctId={ acctId }/>
           </div>
 
           <div className="m-2 p-2 border rounded">
@@ -100,7 +113,7 @@ class App extends React.Component {
           </div>
 
           <div className="m-2 p-2 border rounded">
-            <KittiesPanel acctId={ acctId }/>
+            <KittiesPanel ref={this.kittiesPanelRef} acctId={ acctId }/>
           </div>
 
           <div className="m-2 p-2 border rounded">
@@ -110,7 +123,7 @@ class App extends React.Component {
         </div>
         <AuctionBidModal ref={this.auctionBidModalRef}/>
         <CreateKittyModal acctId={acctId} ref={this.createKittyModalRef}
-          insertToastMsgHandler={this.insertToastMsg}/>
+          insertToastMsgHandler={this.insertToastMsg} refreshKittiesHandler={this.refreshKitties}/>
         <CreateAuctionModal acctId={acctId} ref={this.createAuctionModalRef}/>
         <EventToast ref={this.eventToastRef} toastMsgs={toastMsgs}/>
       </React.Fragment>

@@ -31,6 +31,10 @@ class AuctionInfo extends React.Component {
     });
   }
 
+  refreshData = async() => {
+    return Promise.all([ this.fetchCounts(), this.fetchBalance()]);
+  }
+
   render() {
     const { acctId } = this.props;
     const { myBalance, cnts } = this.state;
