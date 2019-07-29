@@ -9,9 +9,10 @@ class AuctionsPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = { kitties: [], auctions: [], bids: [] };
+    this.refreshData();
   }
 
-  async componentDidMount() {
+  async refreshData() {
     const { acctId } = this.props;
     const auctions = await substrateService.fetchAuctions();
 

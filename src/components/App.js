@@ -23,12 +23,13 @@ class App extends React.Component {
       acctId: dataService.getAcctId(),
       toastMsgs: [],
     };
+    this.auctionInfoRef = React.createRef();
+    this.kittiesPanelRef = React.createRef();
+    this.auctionsPanelRef = React.createRef();
     this.auctionBidModalRef = React.createRef();
     this.createKittyModalRef = React.createRef();
     this.createAuctionModalRef = React.createRef();
     this.eventToastRef = React.createRef();
-    this.kittiesPanelRef = React.createRef();
-    this.auctionInfoRef = React.createRef();
   }
 
   componentDidMount() {
@@ -77,10 +78,19 @@ class App extends React.Component {
   }
 
   refreshKitties = () => {
-    const kittiesPanel = this.kittiesPanelRef.current;
-    kittiesPanel.fetchKitties();
     const auctionInfo = this.auctionInfoRef.current;
     auctionInfo.refreshData();
+    const kittiesPanel = this.kittiesPanelRef.current;
+    kittiesPanel.fetchKitties();
+  }
+
+  refreshAuctions = () => {
+    const auctionInfo = this.auctionInfoRef.current;
+    auctionInfo.refreshData();
+    const kittiesPanel = this.kittiesPanelRef.current;
+    kittiesPanel.fetchKitties();
+    const auctionsPanel = this.auctionsPanelRef.current;
+    auctionsPanel.refreshData();
   }
 
   render() {
@@ -117,14 +127,15 @@ class App extends React.Component {
           </div>
 
           <div className="m-2 p-2 border rounded">
-            <AuctionsPanel acctId={ acctId }
+            <AuctionsPanel ref={this.auctionsPanelRef} acctId={ acctId }
               updateAuctionBidModalHandler = {this.updateAuctionBidModalHandler}/>
           </div>
         </div>
         <AuctionBidModal ref={this.auctionBidModalRef}/>
         <CreateKittyModal acctId={acctId} ref={this.createKittyModalRef}
           insertToastMsgHandler={this.insertToastMsg} refreshKittiesHandler={this.refreshKitties}/>
-        <CreateAuctionModal acctId={acctId} ref={this.createAuctionModalRef}/>
+        <CreateAuctionModal acctId={acctId} ref={this.createAuctionModalRef}
+          insertToastMsgHandler={this.insertToastMsg} refreshAuctionsHandler={this.refreshAuctions}/>
         <EventToast ref={this.eventToastRef} toastMsgs={toastMsgs}/>
       </React.Fragment>
     );

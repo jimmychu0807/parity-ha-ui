@@ -122,34 +122,8 @@ export async function createKitty(acctId, kitty_name, callbacks) {
   substrateTx(acctId, api => api.createKitty(kitty_name), callbacks);
 }
 
-export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
-  const api = await createApiWithTypes();
-  const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
-
-  api.tx.catAuction
-    .startAuction(kittyId, endDateTime, basePrice)
-    .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
-    .send( ({events = [], status}) => {
-      console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-        console.log("events", events);
-        console.log("status", status);
-
-        // check that event doesn't have ExtrinsicFailed type, then show the event for 3 sec. and disappear
-        debugger;
-      }
-      else if (status.isInvalid) {
-        console.log("invalid");
-        console.log("events", events);
-        console.log("status", status);
-        debugger;
-      } else {
-        // have a modal showing writing to blockchain
-        debugger;
-        console.log("running...");
-      }
-    });
+export async function startAuction(acctId, kittyId, basePrice, endDateTime, callbacks) {
+  substrateTx(acctId, api => api.startAuction(kittyId, endDateTime, basePrice), callbacks);
 }
 
 export async function closeAuction(acctId, auctionId) {

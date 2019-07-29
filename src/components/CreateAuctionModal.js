@@ -31,7 +31,7 @@ class CreateAuctionModal extends React.Component {
   handleCreate = (ev) => {
     ev.preventDefault();
 
-    const { acctId } = this.props;
+    const { acctId, insertToastMsgHandler, refreshAuctionsHandler } = this.props;
     const modal = this.modalRef.current;
 
     const kittyId = modal.querySelector("#create-auction-kitty-id").value;
@@ -39,7 +39,14 @@ class CreateAuctionModal extends React.Component {
     const endDateTime = modal.querySelector("#create-auction-enddatetime input").value;
     const unixT = moment(endDateTime, "YYYY-MM-DD HH:mm").unix();
 
-    substrateService.startAuction(acctId, kittyId, basePrice, unixT);
+    substrateService.startAuction(acctId, kittyId, basePrice, unixT, {
+      eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
+      successCallback: (title, content) => {
+        insertToastMsgHandler(title, content, "success", true);
+        refreshAuctionsHandler();
+      },
+      failureCallback: (title, content) => insertToastMsgHandler(title, content, "failure", true),
+    });
 
     this.clearFormAndHide();
   }
