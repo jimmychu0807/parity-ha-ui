@@ -88,7 +88,7 @@ export async function fetchUserAuctionBid(acctId, aid) {
   return new Obj.Bid(bid);
 }
 
-export async function createKitty(acctId, kitty_name, {startCallback, finishCallback}) {
+export async function createKitty(acctId, kitty_name, {eventCallback, successCallback, failureCallback}) {
   const api = await createApiWithTypes();
   const keyPairAndNonce = await getKeyPairAndNonce(api, acctId);
 
@@ -100,13 +100,19 @@ export async function createKitty(acctId, kitty_name, {startCallback, finishCall
       if (status.isFinalized) {
         console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
 
-        console.log("events", events);
-        console.log("status", status);
-        // debugger;
+        events.forEach(({ phase, event: {data, method, section} }) => {
+          if (section === "system") {
+            method === "ExtrinsicSuccess" ?
+              successCallback(`SUCCESS: ${section}.${method}`):
+              failureCallback(`FAILURE: ${section}.${method}`);
+          } else {
+            eventCallback(`${section}.${method}`, data.toJSON().join('<br/>'));
+          }
+        });
+
       }
       else {
-        console.log("running...");
-        startCallback("catAuction", "running...");
+        eventCallback("Substrate", "Submitting transaction...");
       }
     });
 }
@@ -135,6 +141,7 @@ export async function startAuction(acctId, kittyId, basePrice, endDateTime) {
         debugger;
       } else {
         // have a modal showing writing to blockchain
+        debugger;
         console.log("running...");
       }
     });

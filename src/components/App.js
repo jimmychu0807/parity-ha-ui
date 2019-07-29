@@ -10,6 +10,7 @@ import AuctionsPanel from './AuctionsPanel';
 import AuctionBidModal from './AuctionBidModal';
 import CreateKittyModal from './CreateKittyModal';
 import CreateAuctionModal from './CreateAuctionModal';
+import EventToast from './EventToast';
 
 // services
 import * as substrateService from '../services/substrateService'
@@ -20,10 +21,12 @@ class App extends React.Component {
     super(props);
     this.state = {
       acctId: dataService.getAcctId(),
+      toastMsgs: [],
     };
     this.auctionBidModalRef = React.createRef();
     this.createKittyModalRef = React.createRef();
     this.createAuctionModalRef = React.createRef();
+    this.eventToastRef = React.createRef();
   }
 
   componentDidMount() {
@@ -60,8 +63,15 @@ class App extends React.Component {
     modal.showModal();
   }
 
+  insertToastMsg = (title, content, bAutoHide) => {
+    let { toastMsgs } = this.state;
+    toastMsgs.push({title, content});
+    this.setState({toastMsgs});
+    this.eventToastRef.current.showToasts(bAutoHide);
+  }
+
   render() {
-    const { acctId } = this.state;
+    const { acctId, toastMsgs } = this.state;
     const isAcctId = acctId && acctId.length > 0;
 
     return (
@@ -99,8 +109,10 @@ class App extends React.Component {
           </div>
         </div>
         <AuctionBidModal ref={this.auctionBidModalRef}/>
-        <CreateKittyModal acctId={acctId} ref={this.createKittyModalRef}/>
+        <CreateKittyModal acctId={acctId} ref={this.createKittyModalRef}
+          insertToastMsgHandler={this.insertToastMsg}/>
         <CreateAuctionModal acctId={acctId} ref={this.createAuctionModalRef}/>
+        <EventToast ref={this.eventToastRef} toastMsgs={toastMsgs}/>
       </React.Fragment>
     );
   }

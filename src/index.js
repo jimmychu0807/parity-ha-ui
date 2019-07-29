@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 
 // our own code
 import App from './components/App';
+
+// our own libraries
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<App />, document.getElementById('app-root'));

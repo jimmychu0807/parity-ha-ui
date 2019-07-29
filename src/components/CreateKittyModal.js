@@ -1,7 +1,6 @@
 import React from 'react';
 
 // our own code
-import { showEventToast } from './EventToast';
 import * as substrateService from '../services/substrateService';
 
 const jQuery = window.jQuery;
@@ -28,11 +27,13 @@ class CreateKittyModal extends React.Component {
     ev.preventDefault();
 
     let modal = this.modalRef.current;
-    const {acctId} = this.props;
+    const {acctId, insertToastMsgHandler} = this.props;
     const kitty_name = modal.querySelector(`#${KITTY_NAME_INPUT_ID}`).value;
+
     substrateService.createKitty(acctId, kitty_name, {
-      startCallback: (title, body) => { showEventToast(title, body) },
-      finishCallback: () => {},
+      eventCallback: (title, content) => insertToastMsgHandler(title, content, false),
+      successCallback: (title, content) => insertToastMsgHandler(title, content, true),
+      failureCallback: (title, content) => insertToastMsgHandler(title, content, true),
     });
 
     // handling UI stuff
