@@ -32,10 +32,15 @@ class AuctionBidModal extends React.Component {
 
   handleBid = (ev) => {
     ev.preventDefault();
+    const modal = this.modalRef.current;
+    const form = modal.getElementsByTagName("form")[0];
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      return;
+    }
 
     const { acctId, insertToastMsgHandler, refreshAuctionsHandler } = this.props;
     const { auction, acctBid } = this.state;
-    const modal = this.modalRef.current;
     const bidPrice = modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value;
 
     if (!acctBid || bidPrice > acctBid.price) {
@@ -55,8 +60,13 @@ class AuctionBidModal extends React.Component {
 
   clearFormAndHide = () => {
     const modal = this.modalRef.current;
-    modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value = '';
     this.setState({showModal: false});
+
+    modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value = '';
+
+    // remove `was-validated` class
+    const form = modal.getElementsByTagName("form")[0];
+    form.classList.remove('was-validated');
   }
 
   render() {
@@ -64,6 +74,8 @@ class AuctionBidModal extends React.Component {
     const { auction, acctBid } = this.state;
 
     if (!(auction && acctId)) return null;
+
+    const minBidPrice = (acctBid ? acctBid.price + 1 : auction.price_to_topmost)
 
     return(
       <div id="auctionBidModal" className="modal fade" tabIndex="-1" role="dialog"
@@ -116,8 +128,9 @@ class AuctionBidModal extends React.Component {
                   { acctBid ? "Your new bid" : "Your bid" }
                 </label>
                 <div className="col-sm-8">
-                  <input id={BIDPRICE_INPUT_ID} type="number"
-                    className="form-control" defaultValue={acctBid ? acctBid.price : auction.price_to_topmost}/>
+                  <input id={BIDPRICE_INPUT_ID} type="number" className="form-control"
+                    defaultValue={minBidPrice} required={true} min={minBidPrice}/>
+                  <div className="invalid-feedback">{`Need at least ${minBidPrice} for this bid to be significant`}</div>
                 </div>
               </div>
             </form>
