@@ -17,7 +17,7 @@ class CopyToClipboard extends React.Component {
     const { showCopyBtn } = this.state;
     const btnClass = `p-0 btn btn-link ${showCopyBtn ? "visible" : "invisible"}`;
 
-    return <div className="d-inline-block"
+    return <div className="d-inline-block text-break"
       onMouseEnter={this.showCopyBtn}
       onMouseLeave={this.hideCopyBtn}>
       <span>{value}</span>

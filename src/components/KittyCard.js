@@ -1,5 +1,7 @@
 import React from 'react';
 
+import CopyToClipboard from "./CopyToClipboard";
+
 class KittyCard extends React.Component {
   render() {
     const { kitty } = this.props;
@@ -10,7 +12,9 @@ class KittyCard extends React.Component {
         <div className="card-body p-2">
           <div className="row no-gutters my-1">
             <div className="col-3 col-sm-2 font-small">ID:</div>
-            <div className="col-9 col-sm-10 font-small">{kitty.id}</div>
+            <div className="col-9 col-sm-10 font-small">
+              <CopyToClipboard value={kitty.id} />
+            </div>
           </div>
 
           <div className="row no-gutters my-1">
