@@ -3,8 +3,10 @@ import React from 'react';
 // our own code
 import * as substrateService from '../services/substrateService';
 
-const jQuery = window.jQuery;
+const MIN_KITTY_NAME_LEN = 3;
 const KITTY_NAME_INPUT_ID = "create-kitty-kname";
+
+const jQuery = window.jQuery;
 
 class CreateKittyModal extends React.Component {
   constructor(props) {
@@ -19,16 +21,27 @@ class CreateKittyModal extends React.Component {
 
   clearFormAndHide = () => {
     const modal = this.modalRef.current;
-    modal.querySelector(`#${KITTY_NAME_INPUT_ID}`).value = '';
     jQuery(modal).modal("hide");
+
+    // remove input value
+    modal.querySelector(`#${KITTY_NAME_INPUT_ID}`).value = '';
+
+    // remove `was-validated` class
+    const form = modal.getElementsByTagName("form")[0];
+    form.classList.remove('was-validated');
   }
 
   handleCreate = (ev) => {
     ev.preventDefault();
+    const modal = this.modalRef.current;
+    const form = modal.getElementsByTagName("form")[0];
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      return;
+    }
 
-    let modal = this.modalRef.current;
-    const { acctId, insertToastMsgHandler, refreshKittiesHandler } = this.props;
     const kitty_name = modal.querySelector(`#${KITTY_NAME_INPUT_ID}`).value;
+    const { acctId, insertToastMsgHandler, refreshKittiesHandler } = this.props;
 
     substrateService.createKitty(acctId, kitty_name, {
       eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
@@ -52,7 +65,7 @@ class CreateKittyModal extends React.Component {
 
             <div className="modal-header">
               <h5 className="modal-title">Create Kitty</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <button type="button" className="close" onClick={this.clearFormAndHide} aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
@@ -61,7 +74,12 @@ class CreateKittyModal extends React.Component {
               <div className="form-group row">
                 <label htmlFor={KITTY_NAME_INPUT_ID} className="col-sm-3 col-form-label">Kitty Name:</label>
                 <div className="col-sm-9">
-                  <input type="text" className="form-control" id={KITTY_NAME_INPUT_ID} placeholder="Name"/>
+                  <input type="text" className="form-control" id={KITTY_NAME_INPUT_ID}
+                    required={true} minLength={MIN_KITTY_NAME_LEN}
+                    placeholder="Name"/>
+                  <div className="invalid-feedback">
+                    {`kitty name has to be at least ${MIN_KITTY_NAME_LEN} characters long`}
+                  </div>
                 </div>
               </div>
             </form>
