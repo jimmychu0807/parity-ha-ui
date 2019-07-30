@@ -36,3 +36,8 @@ code {
 .toast {
   min-width: 200px;
 }
+
+.no-gutters-override {
+  margin-left:  0 !important;
+  margin-right: 0 !important;
+}

@@ -31,16 +31,18 @@ class AuctionsPanel extends React.Component {
     return(
       <React.Fragment>
         <h5>Auctions Panel</h5>
-        <div className="row">{ auctions.map((auction, i) =>
-          <div className="col-md-6 col-lg-4 my-1" key={auction.id}>
-            <AuctionCard count={i} auction={auction} acctId={acctId}
-              kitty={kitties.find(kitty => kitty.id === auction.kitty_id)}
-              acctBid={bids.find(bid => bid.auction_id === auction.id)}
-              insertToastMsgHandler={insertToastMsgHandler}
-              refreshAuctionsHandler={refreshAuctionsHandler}
-              updateAuctionBidModalHandler = {updateAuctionBidModalHandler}/>
-          </div>
-        ) }</div>
+        <div className="card-deck">{
+          auctions.map((auction, i) =>
+            <div className="col-md-6 col-lg-4 my-1 d-flex" key={auction.id}>
+              <AuctionCard count={i} auction={auction} acctId={acctId}
+                kitty={kitties.find(kitty => kitty.id === auction.kitty_id)}
+                acctBid={bids.find(bid => bid.auction_id === auction.id)}
+                insertToastMsgHandler={insertToastMsgHandler}
+                refreshAuctionsHandler={refreshAuctionsHandler}
+                updateAuctionBidModalHandler = {updateAuctionBidModalHandler}/>
+            </div>
+          )
+        }</div>
       </React.Fragment>
     );
   }

@@ -22,11 +22,13 @@ class KittiesPanel extends React.Component {
     return(
       <React.Fragment>
         <h5>Kitties Panel</h5>
-        <div className="row">{ kitties.map(kitty =>
-          <div className="col-md-6 col-lg-4 my-1" key={kitty.id}>
-            <KittyCard kitty = {kitty} />
-          </div>
-        ) }</div>
+        <div className="card-deck">{
+          kitties.map(kitty =>
+            <div className="col-md-6 col-lg-4 my-1 d-flex" key={kitty.id}>
+              <KittyCard kitty = {kitty} />
+            </div>
+          )
+        }</div>
       </React.Fragment>
     );
   }

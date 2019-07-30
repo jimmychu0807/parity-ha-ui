@@ -5,7 +5,7 @@ class KittyCard extends React.Component {
     const { kitty } = this.props;
 
     return(
-      <div className="card">
+      <div className="card no-gutters-override">
         <h6 className="card-header">{kitty.name}</h6>
         <div className="card-body p-2">
           <div className="row no-gutters my-1">
