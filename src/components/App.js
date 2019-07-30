@@ -2,6 +2,7 @@
 import React from 'react';
 
 // our own codes
+import AcctIdPanel from './AcctIdPanel';
 import SetAcctIdPanel from './SetAcctIdPanel';
 import AuctionInfo from './AuctionInfo';
 import KittiesPanel from './KittiesPanel';
@@ -100,6 +101,10 @@ class App extends React.Component {
     return (
       <React.Fragment>
         <div className="container-fluid">
+          <div className="m-2 p-2 border rounded">
+            <AcctIdPanel />
+          </div>
+
           <div className="m-2 p-2 border rounded">
             <SetAcctIdPanel acctId = {acctId} setAcctIdHandler = { this.setAcctIdHandler }
               rmAcctIdHandler = { this.rmAcctIdHandler } />
