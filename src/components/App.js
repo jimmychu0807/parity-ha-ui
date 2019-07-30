@@ -49,9 +49,9 @@ class App extends React.Component {
     window.location.reload();
   }
 
-  updateAuctionBidModalHandler = (opt, callback) => {
+  updateNShowAuctionBidModal = (opt) => {
     const auctionBidModal = this.auctionBidModalRef.current;
-    auctionBidModal.setState(opt, callback);
+    auctionBidModal.updateNShowAuctionBidModal(opt);
   }
 
   showCreateKittyModal = (ev) => {
@@ -101,12 +101,12 @@ class App extends React.Component {
       <React.Fragment>
         <div className="container-fluid">
           <div className="m-2 p-2 border rounded">
-            <SetAcctIdPanel acctId = { acctId } setAcctIdHandler = { this.setAcctIdHandler }
+            <SetAcctIdPanel acctId = {acctId} setAcctIdHandler = { this.setAcctIdHandler }
               rmAcctIdHandler = { this.rmAcctIdHandler } />
           </div>
 
           <div className="m-2 p-2 border rounded">
-            <AuctionInfo ref={this.auctionInfoRef} acctId={ acctId }/>
+            <AuctionInfo ref={this.auctionInfoRef} acctId={acctId}/>
           </div>
 
           {/* Two action buttons */}
@@ -125,22 +125,22 @@ class App extends React.Component {
 
           {/* Kitties Panel */}
           <div className="m-2 p-2 border rounded">
-            <KittiesPanel ref={this.kittiesPanelRef} acctId={ acctId }/>
+            <KittiesPanel ref={this.kittiesPanelRef} acctId={acctId}/>
           </div>
 
           {/* Auctions Panel */}
           <div className="m-2 p-2 border rounded">
-            <AuctionsPanel ref={this.auctionsPanelRef} acctId={ acctId }
+            <AuctionsPanel ref={this.auctionsPanelRef} acctId={acctId}
               insertToastMsgHandler={this.insertToastMsg}
               refreshAuctionsHandler={this.refreshAuctions}
-              updateAuctionBidModalHandler = {this.updateAuctionBidModalHandler}/>
+              updateAuctionBidModalHandler = {this.updateNShowAuctionBidModal}/>
           </div>
         </div>
 
         {/* Modal Dialogs */}
-        <AuctionBidModal ref={this.auctionBidModalRef}
+        <AuctionBidModal ref={this.auctionBidModalRef} acctId={acctId}
           insertToastMsgHandler={this.insertToastMsg}
-          refreshKittiesHandler={this.refreshKitties} />
+          refreshAuctionsHandler={this.refreshAuctions} />
         <CreateKittyModal ref={this.createKittyModalRef} acctId={acctId}
           insertToastMsgHandler={this.insertToastMsg}
           refreshKittiesHandler={this.refreshKitties} />

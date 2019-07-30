@@ -4,27 +4,26 @@ import React from 'react';
 import * as substrateService from '../services/substrateService';
 
 const moment = window.moment();
-const jQuery = window.jQuery;
-const AUCTION_BID_MODAL_ID = "#auctionBidModal";
 
 class AuctionCard extends React.Component {
 
   showBidBtn = () => {
     // if not auction kitty owner && status == ongoing && not exceed auction.end_time yet
     const { auction, kitty, acctId } = this.props;
-    return !( !acctId || acctId.length === 0 ||
-      auction.status !== "ongoing" ||
-      moment.unix() > auction.end_time.unix() ||
-      acctId === kitty.owner);
+    return (acctId && acctId.length > 0 &&
+      auction.status === "ongoing" &&
+      moment.unix() <= auction.end_time.unix() &&
+      acctId !== kitty.owner);
   }
 
   showCancelBtn = () => {
     // if status == ongoing && bidCount == 0 && not exceed auction.end_time yet
-    const { auction, acctId } = this.props;
-    return !(!acctId || acctId.length === 0 ||
-      auction.status !== "ongoing" ||
-      auction.bids_count > 0 ||
-      moment.unix() > auction.end_time.unix());
+    const { auction, kitty, acctId } = this.props;
+    return (acctId && acctId.length > 0 &&
+      acctId === kitty.owner &&
+      auction.status === "ongoing" &&
+      auction.bids_count === 0 &&
+      moment.unix() <= auction.end_time.unix());
   }
 
   showCloseBtn = () => {
@@ -37,10 +36,8 @@ class AuctionCard extends React.Component {
 
   bid = (ev) => {
     ev.preventDefault();
-    const { acctId, auction, acctBid, updateAuctionBidModalHandler } = this.props;
-    updateAuctionBidModalHandler({acctId, auction, acctBid}, () =>
-      jQuery(AUCTION_BID_MODAL_ID).modal("show")
-    );
+    const { auction, acctBid, updateAuctionBidModalHandler } = this.props;
+    updateAuctionBidModalHandler({auction, acctBid});
   }
 
   cancelAuction = (ev) => {

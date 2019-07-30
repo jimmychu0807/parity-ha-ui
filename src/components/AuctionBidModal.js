@@ -10,23 +10,43 @@ class AuctionBidModal extends React.Component {
     super(props);
     this.state = {
       auction: null,
-      acctId: null,
       acctBid: null,
+      showModal: false,
     }
 
     this.modalRef = React.createRef();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const $modal = jQuery(this.modalRef.current);
+    const prevShowModal = prevState.showModal;
+    const {showModal} = this.state;
+
+    if (!prevShowModal && showModal) return $modal.modal("show");
+    if (prevShowModal && !showModal) return $modal.modal("hide");
+  }
+
+  updateNShowAuctionBidModal = ({auction, acctBid}) => {
+    this.setState({auction, acctBid, showModal: true});
+  }
+
   handleBid = (ev) => {
     ev.preventDefault();
 
+    const { acctId, insertToastMsgHandler, refreshAuctionsHandler } = this.props;
+    const { auction, acctBid } = this.state;
     const modal = this.modalRef.current;
-    const { auction, acctId, acctBid } = this.state;
     const bidPrice = modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value;
 
-    // TODO: handle the error case when the new bid is less than the current bid
     if (!acctBid || bidPrice > acctBid.price) {
-      substrateService.bid(acctId, auction.id, bidPrice);
+      substrateService.bid(acctId, auction.id, bidPrice, {
+        eventCallback: (title, content) => insertToastMsgHandler(title, content, "event", false),
+        successCallback: (title, content) => {
+          insertToastMsgHandler(title, content, "success", true);
+          refreshAuctionsHandler();
+        },
+        failureCallback: (title, content) => insertToastMsgHandler(title, content, "failure", true),
+      });
     }
 
     // handling UI stuff
@@ -36,11 +56,12 @@ class AuctionBidModal extends React.Component {
   clearFormAndHide = () => {
     const modal = this.modalRef.current;
     modal.querySelector(`#${BIDPRICE_INPUT_ID}`).value = '';
-    jQuery(modal).modal("hide");
+    this.setState({showModal: false});
   }
 
   render() {
-    const { auction, acctId, acctBid } = this.state;
+    const { acctId } = this.props;
+    const { auction, acctBid } = this.state;
 
     if (!(auction && acctId)) return null;
 
@@ -51,7 +72,8 @@ class AuctionBidModal extends React.Component {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Auction Bidding</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <button type="button" className="close" aria-label="Close"
+                onClick={ () => this.setState({showModal: false}) } >
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
@@ -95,7 +117,7 @@ class AuctionBidModal extends React.Component {
                 </label>
                 <div className="col-sm-8">
                   <input id={BIDPRICE_INPUT_ID} type="number"
-                    className="form-control" defaultValue={acctBid ? acctBid.price : ""}/>
+                    className="form-control" defaultValue={acctBid ? acctBid.price : auction.price_to_topmost}/>
                 </div>
               </div>
             </form>
