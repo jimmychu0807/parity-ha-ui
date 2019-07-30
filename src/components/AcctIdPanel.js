@@ -1,5 +1,7 @@
 import React from 'react';
 
+import CopyToClipboard from "./CopyToClipboard";
+
 const ACCT_IDS = {
   Alice:   "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
   Bob:     "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
@@ -36,7 +38,9 @@ class AcctIdPanel extends React.Component {
           Object.entries(ACCT_IDS).map(([name, acctId]) =>
             <div key={acctId} className="d-flex">
               <div className="p-1 w-25">{name}</div>
-              <div className="p-1 w-75 font-weight-bold">{acctId}</div>
+              <div className="p-1 w-75 font-weight-bold">
+                <CopyToClipboard value={acctId} />
+              </div>
             </div>
           )
         }</div>
