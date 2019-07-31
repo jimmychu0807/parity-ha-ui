@@ -13,6 +13,7 @@ This is the React frontend that works with the [Substrate Blockchain Runtime](ht
 ### Implementation Notes
 
   - Mainly relied on awesome UI libraries [Bootstrap](https://getbootstrap.com/) and [Fontawesome](https://fontawesome.com/).
+  - All Substrate interactions are handled in [substrateService](./src/services/substrateService.js), using [Polkadot-js API](https://polkadot.js.org/api/).
 
 ### Deployment Notes
 
