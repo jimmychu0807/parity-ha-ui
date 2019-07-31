@@ -98,23 +98,21 @@ export async function substrateTx(acctId, mainCallback,
     .sign(keyPairAndNonce.keyPair, { nonce: keyPairAndNonce.nonce })
     .send( ({events = [], status}) => {
       console.log('Transaction status:', status.type);
-      if (status.isFinalized) {
-        console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
-
-        events.forEach(({ phase, event: {data, method, section} }) => {
-          if (section === "system") {
-            method === "ExtrinsicSuccess" ?
-              successCallback(`SUCCESS: ${section}.${method}`):
-              failureCallback(`FAILURE: ${section}.${method}`);
-          } else {
-            eventCallback(`${section}.${method}`, data.toJSON().join('<br/>'));
-          }
-        });
-
+      if (!status.isFinalized) {
+        return eventCallback("Substrate", "Submitting transaction...");
       }
-      else {
-        eventCallback("Substrate", "Submitting transaction...");
-      }
+
+      // status.isFinalized === true
+      console.log(`Completed at block hash: ${status.asFinalized.toHex()}`);
+      events.forEach(({ phase, event: {data, method, section} }) => {
+        if (section !== "system") {
+          return eventCallback(`${section}.${method}`, data.toJSON().join('<br/>'));
+        }
+        // section === "system"
+        return (method === "ExtrinsicSuccess" ?
+          successCallback(`SUCCESS: ${section}.${method}`):
+          failureCallback(`FAILURE: ${section}.${method}`));
+      });
     });
 }
 

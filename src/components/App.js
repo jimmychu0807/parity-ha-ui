@@ -34,7 +34,6 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // just to show that it is connected to the substrate runtime via ws
     substrateService.connect();
   }
 
