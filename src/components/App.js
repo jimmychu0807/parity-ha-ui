@@ -13,9 +13,14 @@ import CreateKittyModal from './CreateKittyModal';
 import CreateAuctionModal from './CreateAuctionModal';
 import EventToast from './EventToast';
 
+import Footer from './Footer';
+
 // services
 import * as substrateService from '../services/substrateService'
 import * as dataService from '../services/dataService'
+
+// css/sass
+import '../assets/sass/app.sass';
 
 class App extends React.Component {
   constructor(props) {
@@ -99,7 +104,7 @@ class App extends React.Component {
 
     return (
       <React.Fragment>
-        <div className="container-fluid">
+        <div className="container-fluid main">
           <div className="m-2 p-2 border rounded">
             <AcctIdPanel />
           </div>
@@ -140,6 +145,9 @@ class App extends React.Component {
               updateAuctionBidModalHandler = {this.updateNShowAuctionBidModal}/>
           </div>
         </div>
+
+        {/* Footer */}
+        <Footer />
 
         {/* Modal Dialogs */}
         <AuctionBidModal ref={this.auctionBidModalRef} acctId={acctId}
